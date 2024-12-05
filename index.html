@@ -115,6 +115,7 @@
     // Переменные для инструмента
     let currentColor = "#000000"; // Цвет по умолчанию
     let tool = "pencil"; // Текущий инструмент (pencil, eraser, eyedropper)
+    let isDrawing = false; // Флаг для непрерывного рисования
 
     // Выбор цвета
     const colorPicker = document.getElementById("color-picker");
@@ -132,8 +133,20 @@
       document.querySelectorAll(".pixel").forEach((pixel) => (pixel.style.backgroundColor = "white"));
     });
 
-    // Рисование и выбор цвета пипеткой
-    canvas.addEventListener("click", (e) => {
+    // Рисование и стирание
+    canvas.addEventListener("mousedown", (e) => {
+      isDrawing = true;
+      handleDrawing(e);
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+      if (isDrawing) handleDrawing(e);
+    });
+
+    canvas.addEventListener("mouseup", () => (isDrawing = false));
+    canvas.addEventListener("mouseleave", () => (isDrawing = false));
+
+    function handleDrawing(e) {
       if (e.target.classList.contains("pixel")) {
         if (tool === "pencil") {
           e.target.style.backgroundColor = currentColor;
@@ -144,16 +157,15 @@
           colorPicker.value = currentColor; // Обновление палитры
         }
       }
-    });
+    }
 
     // Сохранение рисунка
     document.getElementById("save-button").addEventListener("click", () => {
-      const canvasClone = canvas.cloneNode(true);
-      canvasClone.style.gap = "0"; // Убираем зазоры
-      canvasClone.style.border = "none";
-
-      // Генерация изображения
-      html2canvas(canvasClone, { useCORS: true }).then((canvasImage) => {
+      html2canvas(canvas, {
+        backgroundColor: "#ffffff", // Указываем цвет фона
+        width: canvas.offsetWidth,
+        height: canvas.offsetHeight,
+      }).then((canvasImage) => {
         const link = document.createElement("a");
         link.download = "pixel-art.png";
         link.href = canvasImage.toDataURL("image/png");
