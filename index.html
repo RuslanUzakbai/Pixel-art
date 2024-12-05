@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Art</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin: 20px 0;
+    }
+
+    .tools {
+      margin-bottom: 10px;
+    }
+
+    .tools button, .tools input {
+      margin: 0 5px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #f4f4f4;
+    }
+
+    .tools input[type="color"] {
+      padding: 5px;
+    }
+
+    .tools button:hover {
+      background: #ddd;
+    }
+
+    .canvas-container {
+      display: grid;
+      grid-template-columns: repeat(200, 1fr);
+      grid-template-rows: repeat(200, 1fr);
+      width: 400px;
+      height: 400px;
+      border: 1px solid #000;
+    }
+
+    .pixel {
+      width: 2px;
+      height: 2px;
+      background-color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pixel Art</h1>
+  <div class="tools">
+    <button id="pencil">Карандаш</button>
+    <button id="eraser">Ластик</button>
+    <input type="color" id="colorPicker" value="#000000">
+  </div>
+  <div class="canvas-container" id="canvas"></div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const colorPicker = document.getElementById('colorPicker');
+    const pencilButton = document.getElementById('pencil');
+    const eraserButton = document.getElementById('eraser');
+
+    let currentColor = colorPicker.value;
+    let drawingMode = 'pencil'; // pencil or eraser
+
+    // Создаем пиксели
+    for (let i = 0; i < 200 * 200; i++) {
+      const pixel = document.createElement('div');
+      pixel.classList.add('pixel');
+      pixel.addEventListener('mousedown', () => paintPixel(pixel));
+      pixel.addEventListener('mouseover', (e) => {
+        if (e.buttons === 1) paintPixel(pixel); // Рисовать при зажатой левой кнопке мыши
+      });
+      canvas.appendChild(pixel);
+    }
+
+    // Функция для рисования или стирания
+    function paintPixel(pixel) {
+      if (drawingMode === 'pencil') {
+        pixel.style.backgroundColor = currentColor;
+      } else if (drawingMode === 'eraser') {
+        pixel.style.backgroundColor = 'white';
+      }
+    }
+
+    // Выбор карандаша
+    pencilButton.addEventListener('click', () => {
+      drawingMode = 'pencil';
+    });
+
+    // Выбор ластика
+    eraserButton.addEventListener('click', () => {
+      drawingMode = 'eraser';
+    });
+
+    // Изменение цвета карандаша
+    colorPicker.addEventListener('input', (e) => {
+      currentColor = e.target.value;
+    });
+
+    // Предотвращаем перенос элементов браузером
+    document.body.addEventListener('dragstart', (e) => e.preventDefault());
+  </script>
+</body>
+</html>
